@@ -20,7 +20,9 @@ app.get("/", (req, res) => {
 // Endpoint: /message/write?id=[applab_project_id]&message=[string]
 app.get("/message/write", async (req, res) => {
 
-    console.log(req.query);
+    console.log(req.headers.origin);
+    console.log(req.headers.referer);
+    
     const { id, message } = req.query;
 
     if (!id || !message) {
