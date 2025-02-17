@@ -75,4 +75,57 @@ app.get("/message/write", async (req, res) => {
     }
 });
 
+// New /http endpoint
+app.get("/http", async (req, res) => {
+    const { url, method = "GET", headers = {}, id } = req.body;
+
+    if (!url || !id) {
+        return res.status(400).json({ error: "Missing 'url' or 'id' parameter" });
+    }
+
+    try {
+        const response = await axios({ url, method, headers });
+        
+        const filePath = `${BASE_PATH}${id}.json`;
+        const githubUrl = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${filePath}`;
+
+        let messages = [];
+        let sha = null;
+
+        try {
+            const fileResponse = await axios.get(githubUrl, {
+                headers: { Authorization: `token ${GITHUB_TOKEN}` }
+            });
+            const fileContent = Buffer.from(fileResponse.data.content, "base64").toString("utf-8");
+            messages = JSON.parse(fileContent);
+            sha = fileResponse.data.sha;
+        } catch (err) {
+            if (err.response && err.response.status !== 404) {
+                return res.status(500).json({ error: "Failed to read file" });
+            }
+        }
+
+        messages.push({
+            timestamp: new Date().toISOString(),
+            response: response.data
+        });
+
+        const encodedContent = Buffer.from(JSON.stringify(messages, null, 2)).toString("base64");
+
+        const data = {
+            message: `Updated ${filePath} with HTTP response`,
+            content: encodedContent,
+            sha: sha || undefined
+        };
+
+        await axios.put(githubUrl, data, {
+            headers: { Authorization: `token ${GITHUB_TOKEN}` }
+        });
+
+        res.json({ success: true, message: "HTTP response stored in GitHub" });
+    } catch (error) {
+        res.status(500).json({ error: "HTTP request failed", details: error.response?.data || error.message });
+    }
+});
+
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
