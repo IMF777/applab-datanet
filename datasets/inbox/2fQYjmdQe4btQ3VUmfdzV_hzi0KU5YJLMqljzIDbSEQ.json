@@ -1,4 +1,9 @@
 {
   "messages": [],
-  "response": {}
+  "response": {
+    "token": "2910769",
+    "data": "Hello, world!",
+    "timestamp": "2025-02-17T16:09:05.127Z"
+  },
+  "sha": "ed082f8bf23c41577a64c695e43ac9632fec70ca"
 }
