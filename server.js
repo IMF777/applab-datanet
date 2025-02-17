@@ -57,7 +57,7 @@ app.get("/message/write", async (req, res) => {
     }
 });
 
-app.post("/http", async (req, res) => {
+app.get("/http", async (req, res) => {
     const { id, url, method, headers, token } = req.body;
     if (!id || !url || !method) return res.status(400).json({ error: "Missing required parameters" });
 
