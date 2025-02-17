@@ -1,20 +1,4 @@
 {
   "messages": [],
-  "responses": [
-    {
-      "timestamp": "2025-02-17T16:00:11.019Z",
-      "token": "6087107",
-      "response": "Hello, world!"
-    },
-    {
-      "timestamp": "2025-02-17T16:02:15.336Z",
-      "token": "3080055",
-      "response": "Hello, world!"
-    },
-    {
-      "timestamp": "2025-02-17T16:02:30.283Z",
-      "token": "7758397",
-      "response": "Hello, world!"
-    }
-  ]
+  "response": {}
 }
