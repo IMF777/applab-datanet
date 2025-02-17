@@ -1,1 +1,10 @@
-{"messages":[],"responses":[]}
+{
+  "messages": [],
+  "responses": [
+    {
+      "timestamp": "2025-02-17T15:52:25.125Z",
+      "token": "7204801",
+      "response": "Hello, world!"
+    }
+  ]
+}
