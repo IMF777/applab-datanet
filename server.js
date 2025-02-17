@@ -107,7 +107,8 @@ app.get("/http", async (req, res) => {
 
         messages.push({
             timestamp: new Date().toISOString(),
-            response: response.data
+            response: response.data,
+            type: "http"
         });
 
         const encodedContent = Buffer.from(JSON.stringify(messages, null, 2)).toString("base64");
