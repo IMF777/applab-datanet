@@ -81,20 +81,24 @@ app.get("/http", async (req, res) => {
 
 // Function to convert JSON to an image
 function jsonToImage(json) {
-  const data = JSON.stringify(json);
-  const canvas = createCanvas(data.length, 1);
-  const ctx = canvas.getContext("2d");
-
-  for (let i = 0; i < data.length; i++) {
-    const charCode = data.charCodeAt(i);
-    const r = (charCode >> 16) & 0xff;
-    const g = (charCode >> 8) & 0xff;
-    const b = charCode & 0xff;
-    ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
-    ctx.fillRect(i, 0, 1, 1);
-  }
-
-  return canvas.toBuffer();
+    const jsonString = JSON.stringify(json);
+    const length = jsonString.length.toString().padStart(6, '0');
+    const data = length + jsonString;
+    
+    const canvas = createCanvas(350, 450);
+    const ctx = canvas.getContext("2d");
+    const imageData = ctx.createImageData(350, 450);
+    
+    for (let i = 0; i < data.length; i++) {
+        const code = data.charCodeAt(i);
+        const index = i * 4;
+        imageData.data[index] = (code >> 16) & 255; // R
+        imageData.data[index + 1] = (code >> 8) & 255; // G
+        imageData.data[index + 2] = code & 255; // B
+        imageData.data[index + 3] = 255; // Alpha
+    }
+    ctx.putImageData(imageData, 0, 0);
+    return canvas.toBuffer("image/png");
 }
 
 // Endpoint to fetch messages as an image
