@@ -84,6 +84,7 @@ function jsonToImage(json) {
     const jsonString = JSON.stringify(json);
     const length = jsonString.length.toString().padStart(6, '0');
     const data = length + jsonString;
+    console.log(data);
     
     const canvas = createCanvas(350, 450);
     const ctx = canvas.getContext("2d");
