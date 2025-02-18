@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const axios = require("axios");
+const { createCanvas } = require("canvas");
 
 const app = express();
 const PORT = 3000;
@@ -75,6 +76,45 @@ app.get("/http", async (req, res) => {
     res.json({ success: true, fileUrl });
   } catch (error) {
     res.status(500).json({ error: "HTTP request failed", details: error.message });
+  }
+});
+
+// Function to convert JSON to an image
+function jsonToImage(json) {
+  const data = JSON.stringify(json);
+  const canvas = createCanvas(data.length, 1);
+  const ctx = canvas.getContext("2d");
+
+  for (let i = 0; i < data.length; i++) {
+    const charCode = data.charCodeAt(i);
+    const r = (charCode >> 16) & 0xff;
+    const g = (charCode >> 8) & 0xff;
+    const b = charCode & 0xff;
+    ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+    ctx.fillRect(i, 0, 1, 1);
+  }
+
+  return canvas.toBuffer();
+}
+
+// Endpoint to fetch messages as an image
+app.get("/image/messages", async (req, res) => {
+  const { id } = req.query;
+  if (!id) return res.status(400).send("Missing 'id' parameter");
+
+  const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${BASE_PATH}${id}.json`;
+  try {
+    const response = await axios.get(url, {
+      headers: { Authorization: `token ${GITHUB_TOKEN}` }
+    });
+    const fileContent = Buffer.from(response.data.content, "base64").toString("utf-8");
+    const messages = JSON.parse(fileContent);
+
+    const imageBuffer = jsonToImage(messages);
+    res.set("Content-Type", "image/png");
+    res.send(imageBuffer);
+  } catch (error) {
+    res.status(500).send("Failed to fetch messages");
   }
 });
 
